@@ -40,25 +40,65 @@ This project predicts: Which substations are most likely to fail during a flood 
 
 ## Visualizations
 
-### Flood Probability Map
-
-Shows spatial flood risk across NYC using normalized Flood Vulnerability
-Index.
-
-### Infrastructure Network Risk Graph
-
-Nodes colored by predicted failure probability.
-
 ### Failure Probability Distribution
 
-Histogram showing how many substations fall into high-risk vs low-risk
-categories.
+```
+"""
+Ploting histogram of predicted failure probabilities
+"""
+
+fail_prob = prob[:,1].detach().numpy()
+
+plt.hist(fail_prob, bins=20)
+plt.title("Distribution of Failure Risk")
+plt.xlabel("Failure Probability")
+plt.ylabel("Number of Substations")
+plt.show()
+```
+
+Histogram showing how many substations fall into high-risk vs low-risk categories.
+![Probability-Distribution](https://raw.githubusercontent.com/binaryshrey/NYC-Flood-Cascade-GNN/refs/heads/main/assets/image.png)
+
+### Flood Probability Map
+
+```
+"""
+Creating Flood Probability Map
+
+Uses: FVI_storm_surge_present
+"""
+
+import pandas as pd
+import matplotlib.pyplot as plt
+
+score = pd.to_numeric(
+    flood["FVI_storm_surge_present"],
+    errors="coerce"
+)
+
+score = score.fillna(score.mean())
+flood["flood_prob"] = (score - score.min()) / (score.max() - score.min())
+
+
+flood.plot(
+    column="flood_prob",
+    cmap="Reds",
+    legend=True,
+    figsize=(8,8)
+)
+
+plt.title("NYC Flood Probability (Storm Surge Present)")
+plt.show()
+```
+
+Shows spatial flood risk across NYC using normalized Flood Vulnerability Index.
+![Flood-Probability-Map](https://raw.githubusercontent.com/binaryshrey/NYC-Flood-Cascade-GNN/refs/heads/main/assets/image%201.png)
 
 ## Data Sources
 
 ### NYC Flood Data
 
-NYC Flood Vulnerability Index (Storm Surge + Tidal Flood Risk)
+NYC Flood Vulnerability Index (Storm Surge + Tidal Flood Risk) - [Link](https://a816-dohbesp.nyc.gov/IndicatorPublic/data-features/flood-vulnerability-index/)
 
 ### Infrastructure Data
 
